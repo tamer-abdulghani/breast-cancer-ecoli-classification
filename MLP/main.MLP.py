@@ -3,12 +3,17 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 
+import pydotplus as a
+import graphviz as vb
 
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import load_breast_cancer
 from sklearn.neural_network import MLPClassifier
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.decomposition import PCA
 
 
 def MLP_CANCER():
@@ -87,5 +92,52 @@ def MLP_ECOLI():
                     targets.append(8)
 
     data = np.array(data)
+
+    X_train, X_test, Y_train, Y_test = train_test_split(data, targets, test_size=0.10)
+
+    clf = MLPClassifier(activation='relu', alpha=1, batch_size='auto', hidden_layer_sizes=(10, 30, 20),
+                        learning_rate='constant',
+                        learning_rate_init=0.001, max_iter=180, random_state=1, shuffle=True, solver='lbfgs')
+
+    clf.fit(X_train, Y_train)
+
+    print("Number of layers: ", clf.n_layers_)
+    print("Number of outputs: ", clf.n_outputs_)
+
+    train_pred = clf.predict(X_train)
+    test_pred = clf.predict(X_test)
+
+    print("Train accuracy: ", clf.score(X_train, Y_train), " test accuracy:", clf.score(X_test, Y_test))
+
+    plt.plot(Y_test, color='g', label='real target')
+    plt.plot(test_pred, color='b', label='prediction result')
+    plt.legend('test,prediction', ncol=2, loc='upper left');
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.title('test set prediction result')
+
+    '''
+    X_train, X_test, Y_train,Y_test = train_test_split(data,targets,test_size=0.10)
+
+    # Encode class labels as binary vector (with exactly ONE bit set to 1, and all others to 0)
+    Y_train_OneHot = np.eye(9)[Y_train]
+    Y_test_OneHot = np.eye(9)[Y_test]
+    
+    clf = MLPClassifier(activation='relu', alpha=1, batch_size='auto', hidden_layer_sizes=(10, 15), learning_rate='constant',
+           learning_rate_init=0.001, max_iter=200, random_state= 1, shuffle=True, solver='lbfgs')
+    
+    clf.fit(X_train, Y_train_OneHot)
+    print("Number of layers: ", clf.n_layers_)
+    print("Number of outputs: ", clf.n_outputs_)
+    h = np.argmax(clf.predict(X_train), axis=1)
+    fig, ax = plt.subplots(1, 2, figsize=(16, 6))
+    
+    ax[0].scatter(X_train[:, 0], X_train[:, 1], c=Y_train, cmap="magma")
+    ax[0].set_title("Data");
+    ax[1].scatter(X_train[:, 0], X_train[:, 1], c=h, cmap="magma")
+    ax[1].set_title("Prediction");
+    
+    print("Train accuracy: ", clf.score(X_train, Y_train_OneHot), " test accuracy:", clf.score(X_test,Y_test_OneHot))
+
+    '''
     print(data)
     print(targets)
