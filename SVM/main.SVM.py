@@ -1,15 +1,4 @@
 
-import csv
-#%matplotlib inline
-import matplotlib
-import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib.colors import ListedColormap
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_breast_cancer
-from sklearn import svm
-from sklearn.svm import SVC # "Support vector classifier"
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix
 import csv
 import matplotlib
@@ -136,7 +125,7 @@ def SVM_plotting():
     cancer = load_breast_cancer();
     X_train, X_test, Y_train, Y_test = train_test_split(cancer.data, cancer.target, test_size=0.20)
 
-    model = SVC(kernel='sigmoid', C=1)
+    model = SVC(kernel='rbf', C=1)
 
 
     X = X_train[:,[0,1]]
@@ -293,8 +282,8 @@ def bestAcc():
 
 
 if __name__ == '__main__':
-    #SVM_plotting_ecoli()
+    SVM_plotting_ecoli()
     #SVM_plotting()
     #SVM_ecoli()
     #plot3D()
-    bestAcc()
+    #bestAcc()
