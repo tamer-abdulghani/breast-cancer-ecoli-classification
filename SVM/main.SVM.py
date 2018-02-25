@@ -282,8 +282,8 @@ def bestAcc():
 
 
 if __name__ == '__main__':
-    SVM_plotting_ecoli()
+    #SVM_plotting_ecoli()
     #SVM_plotting()
     #SVM_ecoli()
-    #plot3D()
+    plot3D()
     #bestAcc()
