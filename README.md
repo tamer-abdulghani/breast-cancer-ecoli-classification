@@ -3,8 +3,10 @@ In this project you will find the application of three classifiers (MLP, SVC, an
 
 Refer to Notebook available here to understand more: 
 
-Breast Cancer Dataset Winconsin:
+1. Breast Cancer Dataset Winconsin:
+
 https://github.com/tamerabdulghani/MachineLearning/blob/master/Notebook/BreastCancerDatasetWisconsin.ipynb
 
-Ecoli Dataset:
+2. Ecoli Dataset:
+
 https://github.com/tamerabdulghani/MachineLearning/blob/master/Notebook/EcoliDataset.ipynb
