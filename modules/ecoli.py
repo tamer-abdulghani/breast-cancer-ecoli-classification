@@ -1,44 +1,29 @@
-from sklearn.decomposition import PCA
-import pandas as pd
-import seaborn as sb
-from sklearn.ensemble import ExtraTreesClassifier
-import pandas
-from sklearn import tree
-import pydotplus
 import collections
-from sklearn import svm
-import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib.colors import ListedColormap
-from sklearn.model_selection import train_test_split
-from sklearn import preprocessing
-from sklearn.preprocessing import StandardScaler
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import mean_squared_error
-from mlxtend.plotting import plot_decision_regions
-
 import csv
 
-def loadEcoliCSV(csvFile):
+import numpy as np
+import pandas
+import pandas as pd
+import pydotplus
+import seaborn as sb
+from matplotlib import pyplot as plt
+from matplotlib.colors import ListedColormap
+from mlxtend.plotting import plot_decision_regions
+from sklearn import svm
+from sklearn import tree
+from sklearn.decomposition import PCA
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
 
+
+def load_ecoli_dataset(file_path):
     data = []
     targets = []
-
-    '''
-    ecoli_labels = np.genfromtxt(csvFile, delimiter=',', dtype=str)
-    print(set(ecoli_labels))
-    ecoli_targets = np.zeros(ecoli_labels.size, dtype=int)
-    labels = np.unique(ecoli_labels)
-    for l in range(len(labels)):
-        ecoli_targets[ecoli_labels == labels[l]] = l
-
-    labels = set(ecoli_labels)
-    '''
     features_names = ['mcg', 'gvh', 'lip', 'chg', 'aac', 'alm1', 'alm2']
-
-    with open(csvFile) as csvfile:
-        datasetreader = csv.reader(csvfile, delimiter=',')
-        for row in datasetreader:
+    with open(file_path) as csv_file:
+        reader = csv.reader(csv_file, delimiter=',')
+        for row in reader:
             if len(row) == 9:
                 data.append([float(i) for i in row[1:8]])
                 if row[8] == "cp":
@@ -59,7 +44,6 @@ def loadEcoliCSV(csvFile):
                     targets.append(8)
 
     data = np.array(data)
-
     dataset = {}
     dataset['data'] = data
     dataset['target'] = targets
@@ -67,7 +51,8 @@ def loadEcoliCSV(csvFile):
 
     return dataset
 
-def showPCA(dataset):
+
+def show_pca(dataset):
     pca = PCA(n_components=2)
     dataset_pca = pca.fit_transform(dataset['data'])
     plt.scatter(dataset_pca[:, 0], dataset_pca[:, 1],
@@ -79,7 +64,8 @@ def showPCA(dataset):
     plt.colorbar()
     plt.show()
 
-def showHeatMap(dataset):
+
+def show_heat_map(dataset):
     pca = PCA(n_components=2)
     comps = pd.DataFrame(columns=dataset['feature_names'])
     print(comps)
@@ -87,7 +73,7 @@ def showHeatMap(dataset):
     plt.show()
 
 
-def rankMyFeatures(dataset):
+def rank_my_feature(dataset):
     forest = ExtraTreesClassifier(n_estimators=250,
                                   random_state=0)
 
@@ -96,13 +82,11 @@ def rankMyFeatures(dataset):
     std = np.std([tree.feature_importances_ for tree in forest.estimators_],
                  axis=0)
     indices = np.argsort(importances)[::-1]
-
-    # Print the feature ranking
     print("Feature ranking:")
-
     for f in range(dataset['data'].shape[1]):
         print(
-        "%d. feature %d %s (%f)" % (f + 1, indices[f], dataset['feature_names'][indices[f]], importances[indices[f]]))
+            "%d. feature %d %s (%f)" % (
+                f + 1, indices[f], dataset['feature_names'][indices[f]], importances[indices[f]]))
 
     # Plot the feature importances of the forest
     plt.figure()
@@ -114,7 +98,7 @@ def rankMyFeatures(dataset):
     plt.show()
 
 
-def correlationOfFirst8Features(dataset,csvFile):
+def correlation_of_first_8_features(dataset, csvFile):
     arr = np.append(dataset['feature_names'], 'index')
     data2 = pandas.read_csv(csvFile, names=arr)
 
@@ -122,7 +106,7 @@ def correlationOfFirst8Features(dataset,csvFile):
     plt.show()
 
 
-def mlpClassifierTrainTest(dataset):
+def mlp_cassifier(dataset):
     X_train, X_test, Y_train, Y_test = train_test_split(dataset['data'], dataset['target'], test_size=0.10)
 
     # One Hot encoding
@@ -156,38 +140,39 @@ def mlpClassifierTrainTest(dataset):
 
     plt.show()
 
-def dtClassifierTrainTest(dataset):
-    X_train, X_test, Y_train, Y_test = train_test_split(dataset['data'], dataset['target'], test_size=0.25)
+
+def dt_classifier(dataset):
+    x_train, x_test, y_train, y_test = train_test_split(dataset['data'], dataset['target'], test_size=0.25)
 
     classifier = tree.DecisionTreeClassifier()
-    classifier = classifier.fit(X_train, Y_train)
+    classifier = classifier.fit(x_train, y_train)
 
-    train_labels = classifier.predict(X_train)
-    test_labels = classifier.predict(X_test)
+    train_labels = classifier.predict(x_train)
+    test_labels = classifier.predict(x_test)
 
-    print('Score: {}'.format(classifier.score(X_train, Y_train)))
-    print('Score: {}'.format(classifier.score(X_test, Y_test)))
+    print('Score: {}'.format(classifier.score(x_train, y_train)))
+    print('Score: {}'.format(classifier.score(x_test, y_test)))
 
     plt.figure(figsize=(20, 10))
     plt.subplot(2, 2, 1)
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=Y_train)
+    plt.scatter(x_train[:, 0], x_train[:, 1], c=y_train)
     plt.title("Real labels [train]")
     plt.subplot(2, 2, 2)
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=train_labels)
+    plt.scatter(x_train[:, 0], x_train[:, 1], c=train_labels)
     plt.title("DT [train]")
     plt.subplot(2, 2, 3)
-    plt.scatter(X_test[:, 0], X_test[:, 1], c=Y_test)
+    plt.scatter(x_test[:, 0], x_test[:, 1], c=y_test)
     plt.title("Real labels [test]")
     plt.subplot(2, 2, 4)
-    plt.scatter(X_test[:, 0], X_test[:, 1], c=test_labels)
+    plt.scatter(x_test[:, 0], x_test[:, 1], c=test_labels)
     plt.title("DT [test]")
     plt.show()
 
-def visualizeDecisionTree(dataset):
 
-    X_train, X_test, Y_train, Y_test = train_test_split(dataset['data'], dataset['target'], test_size=0.25)
+def visualizeDecisionTree(dataset):
+    x_train, x_test, y_train, y_test = train_test_split(dataset['data'], dataset['target'], test_size=0.25)
     classifier = tree.DecisionTreeClassifier()
-    classifier = classifier.fit(X_train, Y_train)
+    classifier = classifier.fit(x_train, y_train)
 
     dot_data = tree.export_graphviz(classifier,
                                     feature_names=dataset['feature_names'],
@@ -199,9 +184,6 @@ def visualizeDecisionTree(dataset):
 
     colors = ('orange', 'green')
     edges = collections.defaultdict(list)
-
-    # print(dot_data)
-
     for edge in graph.get_edge_list():
         edges[edge.get_source()].append(int(edge.get_destination()))
 
@@ -210,68 +192,68 @@ def visualizeDecisionTree(dataset):
         for i in range(2):
             dest = graph.get_node(str(edges[edge][i]))[0]
             dest.set_fillcolor(colors[i])
-
     graph.write_png('ecoli_dt.png')
 
+
 def svmClassifierTrainTest(dataset):
-    X_train_cancer, X_test_cancer, Y_train_cancer, Y_test_cancer = train_test_split(dataset['data'], dataset['target'],
+    x_train_cancer, x_test_cancer, y_train_cancer, y_test_cancer = train_test_split(dataset['data'], dataset['target'],
                                                                                     test_size=0.20)
-
     clf = svm.SVC()
-    clf.fit(X_train_cancer, Y_train_cancer)
-
-    # Plot training+testing dataset
+    clf.fit(x_train_cancer, y_train_cancer)
+    # Plot training+testing datasets
     cm = plt.cm.RdBu
     cm_bright = ListedColormap(['#FF0000', '#0000FF'])
 
     # Plot the training points
-    plt.scatter(X_train_cancer[:, 0], X_train_cancer[:, 1], c=Y_train_cancer, cmap=cm_bright)
+    plt.scatter(x_train_cancer[:, 0], x_train_cancer[:, 1], c=y_train_cancer, cmap=cm_bright)
     # Plot the testing points
-    plt.scatter(X_test_cancer[:, 0], X_test_cancer[:, 1], marker='x', c=Y_test_cancer, cmap=cm_bright, alpha=0.9)
+    plt.scatter(x_test_cancer[:, 0], x_test_cancer[:, 1], marker='x', c=y_test_cancer, cmap=cm_bright, alpha=0.9)
 
     # Fitting a SVM
     xfit = np.linspace(-1, 3.5)
     plt.figure(figsize=(10, 5))
-    plt.scatter(X_train_cancer[:, 0], X_train_cancer[:, 1], c=Y_train_cancer, s=50, cmap='viridis')
+    plt.scatter(x_train_cancer[:, 0], x_train_cancer[:, 1], c=y_train_cancer, s=50, cmap='viridis')
     for m, b in [(1, 0.65), (0.5, 1.6), (-0.2, 2.9)]:
         plt.plot(xfit, m * xfit + b, '-k')
 
     # Fitting a SVM
     xfit = np.linspace(-1, 3.5)
     plt.figure(figsize=(10, 5))
-    plt.scatter(X_train_cancer[:, 0], X_train_cancer[:, 1], c=Y_train_cancer, s=50, cmap='viridis')
+    plt.scatter(x_train_cancer[:, 0], x_train_cancer[:, 1], c=y_train_cancer, s=50, cmap='viridis')
 
     for m, b, d in [(1, 0.65, 0.33), (0.5, 1.6, 0.55), (-0.2, 2.9, 0.2)]:
         yfit = m * xfit + b
         plt.plot(xfit, yfit, '-k')
         plt.fill_between(xfit, yfit - d, yfit + d, edgecolor='none', color='#AAAAAA', alpha=0.9)
 
-    predicted_label = clf.predict(X_test_cancer)
+    predicted_label = clf.predict(x_test_cancer)
     plt.show()
 
+
 def svmVisualizeTwoFeatures(dataset):
-    X_train, X_test, Y_train, Y_test = train_test_split(np.array(dataset['data']), np.array(dataset['target']), test_size=0.20)
+    x_train, x_test, y_train, y_test = train_test_split(np.array(dataset['data']), np.array(dataset['target']),
+                                                        test_size=0.20)
 
     model = svm.SVC(kernel='rbf', C=1)
 
-    X = X_train[:, [0, 1]]
-    model.fit(X, Y_train)
+    X = x_train[:, [0, 1]]
+    model.fit(X, y_train)
     plot_decision_regions(X=X,
-                          y=Y_train,
+                          y=y_train,
                           clf=model,
                           legend=2)
     plt.show()
 
 
 if __name__ == '__main__':
-    ecoli_csv = 'dataset/Ecoli/ecoli-dataset.csv';
-    dataset = loadEcoliCSV(ecoli_csv)
-    showPCA(dataset)
-    #showHeatMap(dataset)
-    #rankMyFeatures(dataset)
-    #correlationOfFirst8Features(dataset,ecoli_csv)
-    #mlpClassifierTrainTest(dataset)
-    #dtClassifierTrainTest(dataset)
-    #visualizeDecisionTree(dataset)
-    #svmClassifierTrainTest(dataset)
-    #svmVisualizeTwoFeatures(dataset)
+    ecoli_csv = 'datasets/ecoli/ecoli-datasets.csv';
+    dataset = load_ecoli_dataset(ecoli_csv)
+    show_pca(dataset)
+    # show_heat_map(datasets)
+    # rankMyFeatures(datasets)
+    # correlation_of_first_8_features(datasets,ecoli_csv)
+    # mlp_cassifier(datasets)
+    # dt_classifier(datasets)
+    # visualizeDecisionTree(datasets)
+    # svmClassifierTrainTest(datasets)
+    # svmVisualizeTwoFeatures(datasets)
