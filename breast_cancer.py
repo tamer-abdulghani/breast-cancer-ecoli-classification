@@ -16,7 +16,8 @@ from sklearn import svm
 from sklearn.svm import SVC
 from mlxtend.plotting import plot_decision_regions
 
-def showPCA():
+
+def show_pca():
     dataset = load_breast_cancer()
     pca = PCA(n_components=2)
     dataset_pca = pca.fit_transform(dataset.data)
@@ -29,7 +30,8 @@ def showPCA():
     plt.colorbar()
     plt.show()
 
-def showHeatMap():
+
+def show_heat_map():
     dataset = load_breast_cancer()
     pca = PCA(n_components=2)
     comps = pd.DataFrame(pca.components_, columns=dataset.feature_names)
@@ -38,7 +40,7 @@ def showHeatMap():
     plt.show()
 
 
-def rankMyFeatures():
+def rank_my_features():
     dataset = load_breast_cancer()
     forest = ExtraTreesClassifier(n_estimators=250,
                                   random_state=0)
@@ -54,7 +56,7 @@ def rankMyFeatures():
 
     for f in range(dataset.data.shape[1]):
         print(
-        "%d. feature %d %s (%f)" % (f + 1, indices[f], dataset.feature_names[indices[f]], importances[indices[f]]))
+            "%d. feature %d %s (%f)" % (f + 1, indices[f], dataset.feature_names[indices[f]], importances[indices[f]]))
 
     # Plot the feature importances of the forest
     plt.figure()
@@ -66,8 +68,8 @@ def rankMyFeatures():
     plt.show()
 
 
-def correlationOfFirst8Features():
-    csvFile = 'dataset/BreastCancer/cancer.csv'
+def correlation_of_first_8_features():
+    csvFile = 'datasets/breast-cancer/cancer.csv'
     dataset = load_breast_cancer()
     arr = np.append(dataset.feature_names, 'index')
     data2 = pandas.read_csv(csvFile, names=arr)
@@ -85,64 +87,64 @@ def correlationOfFirst8Features():
     plt.show()
 
 
-def mlpClassifier():
+def mlp_classifier():
     dataset = load_breast_cancer()
-    X_train, X_test, Y_train, Y_test = train_test_split(dataset.data, dataset.target, test_size=0.10)
+    x_train, x_test, y_train, y_test = train_test_split(dataset.data, dataset.target, test_size=0.10)
 
     # One Hot encoding
-    Y_train_OneHot = np.eye(2)[Y_train]
-    Y_test_OneHot = np.eye(2)[Y_test]
+    y_train_one_hot = np.eye(2)[y_train]
+    y_test_one_hot = np.eye(2)[y_test]
 
     clf = MLPClassifier(hidden_layer_sizes=(3,), solver='lbfgs',
                         batch_size=4, alpha=1,
                         max_iter=5000, shuffle=True)
-    clf.fit(X_train, Y_train_OneHot)
+    clf.fit(x_train, y_train_one_hot)
     print("Number of layers: ", clf.n_layers_)
     print("Number of outputs: ", clf.n_outputs_)
-    h = np.argmax(clf.predict(X_train), axis=1)
+    h = np.argmax(clf.predict(x_train), axis=1)
 
     cm = plt.cm.RdBu
     cm_bright = ListedColormap(['#FF0000', '#0000FF'])
 
     fig, ax = plt.subplots(1, 2, figsize=(16, 6))
-    ax[0].scatter(X_train[:, 0], X_train[:, 1], c=Y_train, cmap=cm_bright)
+    ax[0].scatter(x_train[:, 0], x_train[:, 1], c=y_train, cmap=cm_bright)
     ax[0].set_title("Data");
-    ax[1].scatter(X_train[:, 0], X_train[:, 1], c=h, cmap=cm_bright)
+    ax[1].scatter(x_train[:, 0], x_train[:, 1], c=h, cmap=cm_bright)
     ax[1].set_title("Prediction");
-    print("Train accuracy: ", clf.score(X_train, Y_train_OneHot), " test accuracy:", clf.score(X_test, Y_test_OneHot))
+    print("Train accuracy: ", clf.score(x_train, y_train_one_hot), " test accuracy:", clf.score(x_test, y_test_one_hot))
     plt.show()
 
 
-def mlpClassifierTrainTest():
-    cancer = load_breast_cancer();
+def mlp_classifier():
+    cancer = load_breast_cancer()
 
-    X = cancer.data
+    x = cancer.data
     y = cancer.target
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=1)
 
     # Encode class labels as binary vector (with exactly ONE bit set to 1, and all others to 0)
-    Y_train_OneHot = np.eye(2)[y_train]
-    Y_test_OneHot = np.eye(2)[y_test]
+    y_train_one_hot = np.eye(2)[y_train]
+    y_test_one_hot = np.eye(2)[y_test]
 
     # act: logistic   , alpha:  0.0316227766017 , layers:  [5, 5] , solver:  lbfgs
     clf = MLPClassifier(hidden_layer_sizes=(10, 3), solver='lbfgs',
                         batch_size=4, alpha=1,
                         max_iter=200, shuffle=True)
-    clf.fit(X_train, Y_train_OneHot)
+    clf.fit(x_train, y_train_one_hot)
 
-    h_train_pred = np.argmax(clf.predict(X_train), axis=1)
-    h_test_pred = np.argmax(clf.predict(X_test), axis=1)
+    h_train_pred = np.argmax(clf.predict(x_train), axis=1)
+    h_test_pred = np.argmax(clf.predict(x_test), axis=1)
 
     plt.figure(figsize=(20, 10))
     plt.subplot(2, 2, 1)
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train)
+    plt.scatter(x_train[:, 0], x_train[:, 1], c=y_train)
     plt.xlabel(cancer.feature_names[0])
     plt.ylabel(cancer.feature_names[1])
     plt.title("Real labels [train]")
 
     plt.subplot(2, 2, 2)
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=h_train_pred)
+    plt.scatter(x_train[:, 0], x_train[:, 1], c=h_train_pred)
     plt.xlabel(cancer.feature_names[0])
     plt.ylabel(cancer.feature_names[1])
     plt.title("MLP [train]")
@@ -150,48 +152,50 @@ def mlpClassifierTrainTest():
     plt.subplot(2, 2, 3)
     plt.xlabel(cancer.feature_names[0])
     plt.ylabel(cancer.feature_names[1])
-    plt.scatter(X_test[:, 0], X_test[:, 1], c=y_test)
+    plt.scatter(x_test[:, 0], x_test[:, 1], c=y_test)
     plt.title("Real labels [test]")
 
     plt.subplot(2, 2, 4)
     plt.xlabel(cancer.feature_names[0])
     plt.ylabel(cancer.feature_names[1])
-    plt.scatter(X_test[:, 0], X_test[:, 1], c=h_test_pred)
-    plt.title("MLP [test]");
+    plt.scatter(x_test[:, 0], x_test[:, 1], c=h_test_pred)
+    plt.title("MLP [test]")
 
-    print("Train accuracy: ", clf.score(X_train, Y_train_OneHot), " test accuracy:", clf.score(X_test, Y_test_OneHot))
+    print("Train accuracy: ", clf.score(x_train, y_train_one_hot), " test accuracy:", clf.score(x_test, y_test_one_hot))
     plt.show()
 
-def dtClassifierTrainTest():
-    cancer = load_breast_cancer();
-    X_train, X_test, Y_train, Y_test = train_test_split(cancer.data, cancer.target, test_size=0.25)
+
+def dt_classifier():
+    cancer = load_breast_cancer()
+    x_train, x_test, y_train, y_test = train_test_split(cancer.data, cancer.target, test_size=0.25)
 
     classifier = tree.DecisionTreeClassifier()
-    classifier = classifier.fit(X_train, Y_train)
+    classifier = classifier.fit(x_train, y_train)
 
-    train_labels = classifier.predict(X_train)
-    test_labels = classifier.predict(X_test)
+    train_labels = classifier.predict(x_train)
+    test_labels = classifier.predict(x_test)
 
-    print('Score: {}'.format(classifier.score(X_train, Y_train)))
-    print('Score: {}'.format(classifier.score(X_test, Y_test)))
+    print('Score: {}'.format(classifier.score(x_train, y_train)))
+    print('Score: {}'.format(classifier.score(x_test, y_test)))
 
     plt.figure(figsize=(20, 10))
     plt.subplot(2, 2, 1)
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=Y_train)
+    plt.scatter(x_train[:, 0], x_train[:, 1], c=y_train)
     plt.title("Real labels [train]")
     plt.subplot(2, 2, 2)
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=train_labels)
+    plt.scatter(x_train[:, 0], x_train[:, 1], c=train_labels)
     plt.title("DT [train]")
     plt.subplot(2, 2, 3)
-    plt.scatter(X_test[:, 0], X_test[:, 1], c=Y_test)
+    plt.scatter(x_test[:, 0], x_test[:, 1], c=y_test)
     plt.title("Real labels [test]")
     plt.subplot(2, 2, 4)
-    plt.scatter(X_test[:, 0], X_test[:, 1], c=test_labels)
+    plt.scatter(x_test[:, 0], x_test[:, 1], c=test_labels)
     plt.title("DT [test]")
     plt.show()
 
+
 def visualizeDecisionTree():
-    cancer = load_breast_cancer();
+    cancer = load_breast_cancer()
     X_train, X_test, Y_train, Y_test = train_test_split(cancer.data, cancer.target, test_size=0.25)
     classifier = tree.DecisionTreeClassifier()
     classifier = classifier.fit(X_train, Y_train)
@@ -220,68 +224,69 @@ def visualizeDecisionTree():
 
     graph.write_png('breast_cancer_dt.png')
 
+
 def svmClassifierTrainTest():
     cancer = load_breast_cancer();
-    X_train_cancer, X_test_cancer, Y_train_cancer, Y_test_cancer = train_test_split(cancer.data, cancer.target,
+    x_train_cancer, x_test_cancer, y_train_cancer, y_test_cancer = train_test_split(cancer.data, cancer.target,
                                                                                     test_size=0.20)
 
     clf = svm.SVC()
-    clf.fit(X_train_cancer, Y_train_cancer)
+    clf.fit(x_train_cancer, y_train_cancer)
 
-    # Plot training+testing dataset
+    # Plot training+testing datasets
     cm = plt.cm.RdBu
     cm_bright = ListedColormap(['#FF0000', '#0000FF'])
 
     # Plot the training points
-    plt.scatter(X_train_cancer[:, 0], X_train_cancer[:, 1], c=Y_train_cancer, cmap=cm_bright)
+    plt.scatter(x_train_cancer[:, 0], x_train_cancer[:, 1], c=y_train_cancer, cmap=cm_bright)
     # Plot the testing points
-    plt.scatter(X_test_cancer[:, 0], X_test_cancer[:, 1], marker='x', c=Y_test_cancer, cmap=cm_bright, alpha=0.9)
+    plt.scatter(x_test_cancer[:, 0], x_test_cancer[:, 1], marker='x', c=y_test_cancer, cmap=cm_bright, alpha=0.9)
 
     # Fitting a SVM
     xfit = np.linspace(-1, 3.5)
     plt.figure(figsize=(10, 5))
-    plt.scatter(X_train_cancer[:, 0], X_train_cancer[:, 1], c=Y_train_cancer, s=50, cmap='viridis')
+    plt.scatter(x_train_cancer[:, 0], x_train_cancer[:, 1], c=y_train_cancer, s=50, cmap='viridis')
     for m, b in [(1, 0.65), (0.5, 1.6), (-0.2, 2.9)]:
         plt.plot(xfit, m * xfit + b, '-k')
 
     # Fitting a SVM
     xfit = np.linspace(-1, 3.5)
     plt.figure(figsize=(10, 5))
-    plt.scatter(X_train_cancer[:, 0], X_train_cancer[:, 1], c=Y_train_cancer, s=50, cmap='viridis')
+    plt.scatter(x_train_cancer[:, 0], x_train_cancer[:, 1], c=y_train_cancer, s=50, cmap='viridis')
 
     for m, b, d in [(1, 0.65, 0.33), (0.5, 1.6, 0.55), (-0.2, 2.9, 0.2)]:
         yfit = m * xfit + b
         plt.plot(xfit, yfit, '-k')
         plt.fill_between(xfit, yfit - d, yfit + d, edgecolor='none', color='#AAAAAA', alpha=0.9)
 
-    predicted_label = clf.predict(X_test_cancer)
+    predicted_label = clf.predict(x_test_cancer)
     plt.show()
+
 
 def svmVisualizeTwoFeature():
     cancer = load_breast_cancer();
-    X_train, X_test, Y_train, Y_test = train_test_split(cancer.data, cancer.target, test_size=0.20)
+    x_train, x_test, y_train, y_test = train_test_split(cancer.data, cancer.target, test_size=0.20)
 
     model = SVC(kernel='rbf', C=1)
 
-    X = X_train[:, [0, 1]]
-    X2 = X_test[:, [0, 1]]
-    model.fit(X, Y_train)
-    print("Train acc: ", model.score(X, Y_train), ", Test Acc:", model.score(X2, Y_test))
+    X = x_train[:, [0, 1]]
+    X2 = x_test[:, [0, 1]]
+    model.fit(X, y_train)
+    print("Train acc: ", model.score(X, y_train), ", Test Acc:", model.score(X2, y_test))
     plot_decision_regions(X=X,
-                          y=Y_train,
+                          y=y_train,
                           clf=model,
                           legend=2)
     plt.show()
 
 
 if __name__ == '__main__':
-    showPCA()
-    #showHeatMap()
-    #rankMyFeatures()
-    #correlationOfFirst8Features()
-    #mlpClassifier()
-    #mlpClassifierTrainTest()
-    #dtClassifierTrainTest()
-    #visualizeDecisionTree()
-    #svmClassifierTrainTest()
-    #svmVisualizeTwoFeature()
+    show_pca()
+    # show_heat_map()
+    # rank_my_features()
+    # correlation_of_first_8_features()
+    # mlp_classifier()
+    # dt_classifier()
+    # visualizeDecisionTree()
+    # svmClassifierTrainTest()
+    # svmVisualizeTwoFeature()

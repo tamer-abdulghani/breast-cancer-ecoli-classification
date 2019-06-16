@@ -16,17 +16,17 @@ import numpy as np
 from sklearn.decomposition import PCA
 
 
-def MLP_CANCER():
-    cancer = load_breast_cancer();
+def mlp_classifier():
+    cancer = load_breast_cancer()
 
     print(cancer.DESCR)
     print(cancer.feature_names)
     print(cancer.target_names)
     print(cancer.data)
-    #print(cancer.type)
-    #print(cancer.data.shap)
+    # print(cancer.type)
+    # print(cancer.data.shap)
 
-    X_train, X_test, Y_train,Y_test = train_test_split(cancer.data,cancer.target,test_size=0.25)
+    X_train, X_test, Y_train, Y_test = train_test_split(cancer.data, cancer.target, test_size=0.25)
 
     # Encode class labels as binary vector (with exactly ONE bit set to 1, and all others to 0)
     Y_train_OneHot = np.eye(2)[Y_train]
@@ -47,7 +47,7 @@ def MLP_CANCER():
     clf = MLPClassifier(hidden_layer_sizes=(1,), solver='sgd',
                         batch_size=4, learning_rate_init=0.005,
                         max_iter=500, shuffle=True)
-    # Train the MLP classifier on training dataset
+    # Train the MLP classifier on training datasets
     clf.fit(X_train, Y_train_OneHot)
 
     print("Number of layers: ", clf.n_layers_)
@@ -59,18 +59,19 @@ def MLP_CANCER():
     h = np.argmax(clf.predict(X_train), axis=1)
     fig, ax = plt.subplots(1, 2, figsize=(16, 6))
     ax[0].scatter(X_train[:, 0], X_train[:, 1], c=Y_train, cmap=cm_bright)
-    ax[0].set_title("Data");
+    ax[0].set_title("Data")
     ax[1].scatter(X_train[:, 0], X_train[:, 1], c=h, cmap=cm_bright)
-    ax[1].set_title("Prediction");
+    ax[1].set_title("Prediction")
 
-def MLP_ECOLI():
+
+def mlp_ecoli():
     data = []
     targets = []
-    ecoli_csv = 'dataset/Ecoli/ecoli-dataset.csv';
+    ecoli_csv = '../datasets/ecoli/ecoli-datasets.csv'
 
-    with open(ecoli_csv, newline='') as csvfile:
-        datasetreader = csv.reader(csvfile, delimiter=',')
-        for row in datasetreader:
+    with open(ecoli_csv, newline='') as csv_file:
+        reader = csv.reader(csv_file, delimiter=',')
+        for row in reader:
             if len(row) == 9:
                 print(row[1:8])
                 data.append([i for i in row[1:8]])
@@ -111,7 +112,7 @@ def MLP_ECOLI():
 
     plt.plot(Y_test, color='g', label='real target')
     plt.plot(test_pred, color='b', label='prediction result')
-    plt.legend('test,prediction', ncol=2, loc='upper left');
+    plt.legend('test,prediction', ncol=2, loc='upper left')
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.title('test set prediction result')
 
@@ -132,9 +133,9 @@ def MLP_ECOLI():
     fig, ax = plt.subplots(1, 2, figsize=(16, 6))
     
     ax[0].scatter(X_train[:, 0], X_train[:, 1], c=Y_train, cmap="magma")
-    ax[0].set_title("Data");
+    ax[0].set_title("Data")
     ax[1].scatter(X_train[:, 0], X_train[:, 1], c=h, cmap="magma")
-    ax[1].set_title("Prediction");
+    ax[1].set_title("Prediction")
     
     print("Train accuracy: ", clf.score(X_train, Y_train_OneHot), " test accuracy:", clf.score(X_test,Y_test_OneHot))
 
